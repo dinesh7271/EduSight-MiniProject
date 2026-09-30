@@ -1,0 +1,3028 @@
+
+# EduSight
+## AI-Powered Early Academic Risk Detection, Explainability, and Actionable Student Support
+
+**Document:** Master Build & AI-Agent Execution Specification  
+**Project Type:** College Mini Project / Production-Oriented AI System  
+**Primary Goal:** Build a real, explainable, leakage-safe academic early-warning system using authentic educational data.  
+**Development Strategy:** Modular AI-agent-assisted implementation with human verification gates.
+
+---
+
+# 1. Executive Summary
+
+EduSight is an AI-powered academic early-warning system designed to identify students who may be at academic risk early enough for meaningful intervention.
+
+The system is **not simply a classification model**.
+
+The complete system consists of:
+
+1. Authentic educational data ingestion
+2. Data quality validation
+3. Temporal feature engineering
+4. Leakage prevention
+5. Academic-risk prediction
+6. Probability calibration
+7. Risk-threshold selection
+8. Explainable AI
+9. Counterfactual/actionable recommendations
+10. Intervention planning
+11. Student dashboard
+12. Faculty dashboard
+13. Role-based authentication
+14. Model monitoring
+15. Data/model/version tracking
+16. Testing and validation
+17. AI-agent-assisted development
+
+The intended flow is:
+
+```text
+Authentic Educational Data
+        ↓
+Data Validation
+        ↓
+Temporal Feature Engineering
+        ↓
+Leakage Detection
+        ↓
+Train / Validation / Test
+        ↓
+Baseline Models
+        ↓
+RF / XGBoost / Other Challengers
+        ↓
+Calibration
+        ↓
+Risk Threshold
+        ↓
+Student Risk Probability
+        ↓
+SHAP Explanation
+        ↓
+Constrained Counterfactual Analysis
+        ↓
+Feasibility Validation
+        ↓
+Action Plan
+        ↓
+Faculty / Student Dashboard
+        ↓
+Monitoring + Human Review
+```
+
+The system must never fabricate data, model results, features, metrics, explanations, or research findings.
+
+---
+
+# 2. Core Project Objective
+
+EduSight should answer four practical questions.
+
+### Question 1 — Who may be at risk?
+
+The model predicts an academically relevant future outcome using only information available at the prediction point.
+
+### Question 2 — Why is the student considered at risk?
+
+The system provides model-derived explanations using SHAP and supporting explainability methods.
+
+### Question 3 — What could the student realistically change?
+
+The system generates constrained counterfactual/actionable recommendations.
+
+### Question 4 — What should the faculty member do?
+
+The system converts validated model outputs into an intervention workflow.
+
+---
+
+# 3. Important Scientific Principle
+
+EduSight must distinguish:
+
+```text
+Prediction ≠ Causation
+```
+
+If SHAP reports that attendance contributed strongly to a prediction, the system must say:
+
+> Attendance was an important factor in this prediction.
+
+It must NOT say:
+
+> Low attendance caused the student to fail.
+
+The latter would require causal evidence that this project does not establish.
+
+---
+
+# 4. Data Authenticity Policy
+
+This is one of the most important requirements of the entire project.
+
+## 4.1 Real data requirement
+
+All reported:
+
+- accuracy
+- precision
+- recall
+- F1
+- ROC-AUC
+- PR-AUC
+- calibration
+- fairness results
+- model comparisons
+- research conclusions
+
+must come from authentic datasets.
+
+## 4.2 Accepted data sources
+
+### Category A — Public real-world datasets
+
+Examples:
+
+- OULAD
+- UCI Predict Students' Dropout and Academic Success
+
+### Category B — Authorized institutional data
+
+If the college provides anonymized academic data with appropriate authorization, it can be used for institutional validation.
+
+### Category C — Synthetic data
+
+Synthetic data may be used ONLY for:
+
+- UI development
+- API testing
+- unit tests
+- edge-case tests
+- database testing
+- authentication testing
+- demonstration of system behavior when authentic data is unavailable
+
+Synthetic data must NEVER be used to claim:
+
+> "Our model achieved X% accuracy."
+
+Synthetic data must also never be silently mixed with real data.
+
+---
+
+# 5. Dataset Strategy
+
+## 5.1 Primary public dataset — OULAD
+
+OULAD is the preferred dataset for the temporal early-warning component.
+
+The Open University describes OULAD as an anonymized dataset containing courses, students, and interactions with the Virtual Learning Environment. Its tables are connected through identifiers and are distributed as CSV files.
+
+Relevant data includes concepts such as:
+
+- students
+- courses/modules
+- assessments
+- registrations
+- VLE activity
+- assessment scores
+- dates
+- interaction counts
+- final outcomes
+
+This makes OULAD particularly useful for constructing temporal prediction windows.
+
+---
+
+# 6. Secondary Dataset — UCI Dataset 697
+
+Dataset:
+
+**Predict Students' Dropout and Academic Success**
+
+Official UCI repository:
+
+https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success
+
+UCI describes it as data from a higher-education institution involving undergraduate students.
+
+It contains:
+
+- 4,424 instances
+- 36 features
+- demographic information
+- academic-path information
+- socioeconomic information
+- first-semester performance
+- second-semester performance
+- macroeconomic variables
+
+Its native target is:
+
+```text
+Dropout
+Enrolled
+Graduate
+```
+
+UCI explicitly defines the problem as a three-category classification task.
+
+Therefore:
+
+**Do NOT automatically rename its target to "academic risk".**
+
+Instead, create a clearly documented experimental mapping if a binary risk experiment is required.
+
+Example:
+
+```text
+Dropout → Risk
+Enrolled → Not automatically risk
+Graduate → Not risk
+```
+
+If this transformation is used, document it as an experimental target definition.
+
+---
+
+# 7. UCI Dataset 320 Warning
+
+The classic UCI Student Performance dataset may be useful as an additional benchmark.
+
+However, it represents secondary-school students rather than higher-education students.
+
+Therefore:
+
+**Do not present it as college/university data.**
+
+It should only be used as an optional supplementary benchmark.
+
+---
+
+# 8. Dataset Mixing Rule
+
+Do NOT blindly concatenate:
+
+```text
+OULAD + UCI 697 + UCI 320
+```
+
+into one training dataset.
+
+These datasets have:
+
+- different populations
+- different institutions
+- different feature definitions
+- different outcome definitions
+- different temporal structures
+
+Instead:
+
+```text
+Experiment A → OULAD
+Experiment B → UCI 697
+Experiment C → optional UCI 320
+Experiment D → institutional dataset
+```
+
+Each gets its own evaluation protocol.
+
+---
+
+# 9. Data Provenance
+
+Every dataset must have a provenance record.
+
+Create:
+
+```text
+data/DATA_PROVENANCE.md
+```
+
+Template:
+
+```text
+Dataset Name:
+Dataset ID:
+Official Source:
+Official URL:
+License:
+DOI:
+Download Date:
+Dataset Version:
+Original File Names:
+Original Row Count:
+Original Column Count:
+
+Target:
+Target Definition:
+
+Features Used:
+Features Excluded:
+
+Reason for Exclusion:
+
+Transformations:
+Missing Value Handling:
+Duplicate Handling:
+Outlier Handling:
+
+Temporal Restrictions:
+
+Train Split:
+Validation Split:
+Test Split:
+
+SHA256:
+```
+
+Never change raw data directly.
+
+Recommended structure:
+
+```text
+data/
+├── raw/
+├── processed/
+└── provenance/
+```
+
+---
+
+# 10. Data Integrity Rules
+
+The AI agent must obey:
+
+```text
+DO NOT INVENT DATA
+DO NOT INVENT COLUMNS
+DO NOT INVENT TARGETS
+DO NOT INVENT METRICS
+DO NOT INVENT RESULTS
+DO NOT INVENT REFERENCES
+DO NOT INVENT API RESPONSES
+DO NOT INVENT STUDENT RECORDS
+```
+
+If a required feature does not exist:
+
+```text
+STOP
+REPORT MISSING FEATURE
+DO NOT FABRICATE IT
+```
+
+---
+
+# 11. Project Architecture
+
+```text
+                         ┌─────────────────────┐
+                         │ Authentic Datasets  │
+                         └──────────┬──────────┘
+                                    ↓
+                         ┌─────────────────────┐
+                         │ Data Validation     │
+                         └──────────┬──────────┘
+                                    ↓
+                         ┌─────────────────────┐
+                         │ Temporal Features   │
+                         └──────────┬──────────┘
+                                    ↓
+                         ┌─────────────────────┐
+                         │ Leakage Detection   │
+                         └──────────┬──────────┘
+                                    ↓
+                         ┌─────────────────────┐
+                         │ ML Training         │
+                         └──────────┬──────────┘
+                                    ↓
+                   ┌────────────────┴────────────────┐
+                   ↓                                 ↓
+            Model Evaluation                  Calibration
+                   ↓                                 ↓
+                   └────────────────┬────────────────┘
+                                    ↓
+                              Risk Probability
+                                    ↓
+                           SHAP Explainability
+                                    ↓
+                       Counterfactual Recourse
+                                    ↓
+                         Feasibility Validation
+                                    ↓
+                           Action Plan Engine
+                                    ↓
+                   ┌────────────────┴───────────────┐
+                   ↓                                ↓
+             Student UI                        Faculty UI
+                   ↓                                ↓
+                   └────────────────┬───────────────┘
+                                    ↓
+                            Monitoring / Audit
+```
+
+---
+
+# 12. Recommended Repository
+
+```text
+edusight/
+│
+├── data/
+│   ├── raw/
+│   │   ├── oulad/
+│   │   ├── uci697/
+│   │   └── institutional/
+│   ├── processed/
+│   └── DATA_PROVENANCE.md
+│
+├── configs/
+│   ├── datasets/
+│   ├── features/
+│   ├── models/
+│   └── thresholds/
+│
+├── notebooks/
+│   ├── 01_data_audit.ipynb
+│   ├── 02_eda.ipynb
+│   ├── 03_baselines.ipynb
+│   ├── 04_temporal_models.ipynb
+│   ├── 05_calibration.ipynb
+│   ├── 06_shap.ipynb
+│   ├── 07_recourse.ipynb
+│   ├── 08_fairness.ipynb
+│   └── 09_final_evaluation.ipynb
+│
+├── src/
+│   ├── data/
+│   │   ├── ingestion.py
+│   │   ├── validation.py
+│   │   └── provenance.py
+│   │
+│   ├── features/
+│   │   ├── temporal.py
+│   │   ├── academic.py
+│   │   └── behavioral.py
+│   │
+│   ├── models/
+│   │   ├── train.py
+│   │   ├── evaluate.py
+│   │   ├── calibrate.py
+│   │   └── registry.py
+│   │
+│   ├── explainability/
+│   │   ├── shap.py
+│   │   ├── lime.py
+│   │   └── stability.py
+│   │
+│   ├── recourse/
+│   │   ├── dice.py
+│   │   ├── constraints.py
+│   │   └── action_plan.py
+│   │
+│   ├── monitoring/
+│   │   ├── drift.py
+│   │   └── performance.py
+│   │
+│   └── api/
+│       ├── main.py
+│       ├── schemas.py
+│       ├── auth.py
+│       └── db.py
+│
+├── models/
+│
+├── reports/
+│   ├── experiments/
+│   ├── figures/
+│   └── results/
+│
+├── tests/
+│
+├── frontend/
+│
+├── docker/
+│
+├── requirements.txt
+├── README.md
+└── docker-compose.yml
+```
+
+---
+
+# 13. PHASE 0 — Project Specification
+
+## Objective
+
+Freeze the project's scientific and engineering requirements before coding.
+
+## Agent tasks
+
+Create:
+
+```text
+docs/
+├── PROJECT_SPECIFICATION.md
+├── DATA_POLICY.md
+├── MODEL_POLICY.md
+└── SECURITY_POLICY.md
+```
+
+Define:
+
+- problem
+- users
+- datasets
+- target definitions
+- prediction windows
+- metrics
+- privacy rules
+- explanation rules
+- intervention rules
+- deployment architecture
+
+## Completion criteria
+
+Agent must provide:
+
+```text
+[ ] Scope defined
+[ ] Dataset policy defined
+[ ] Target defined
+[ ] Leakage policy defined
+[ ] Model policy defined
+[ ] Explanation policy defined
+[ ] Privacy policy defined
+```
+
+---
+
+# 14. PHASE 1 — Dataset Acquisition
+
+## Objective
+
+Obtain authentic datasets from official sources.
+
+Priority:
+
+```text
+1. OULAD
+2. UCI 697
+3. Institutional data if authorized
+```
+
+## Agent responsibilities
+
+1. Download dataset.
+2. Preserve original files.
+3. Calculate SHA256.
+4. Record download date.
+5. Record source URL.
+6. Record license.
+7. Record schema.
+8. Never modify raw files.
+
+## Output
+
+```text
+data/raw/
+data/DATA_PROVENANCE.md
+reports/data_inventory.json
+```
+
+---
+
+# 15. PHASE 2 — Data Audit
+
+The audit must inspect:
+
+- row count
+- column count
+- data types
+- missing values
+- duplicate rows
+- duplicate IDs
+- unique values
+- target distribution
+- outliers
+- date ranges
+- impossible values
+- relationships between tables
+- identifier integrity
+
+Example report:
+
+```text
+Dataset:
+Rows:
+Columns:
+
+Missing:
+Duplicates:
+
+Target:
+Class 1:
+Class 2:
+Class 3:
+
+Temporal Range:
+
+Potential Leakage Columns:
+
+Potential Identifier Columns:
+```
+
+---
+
+# 16. PHASE 3 — Leakage Detection
+
+This is a mandatory phase.
+
+The system must identify whether a feature contains information that would not have been available at prediction time.
+
+Example:
+
+```text
+Prediction Week = 4
+```
+
+Allowed:
+
+```text
+Weeks 1–4 attendance
+Weeks 1–4 assignments
+Weeks 1–4 LMS activity
+Weeks 1–4 assessments
+```
+
+Not allowed:
+
+```text
+Week 5 attendance
+Final examination
+Final grade
+Week 12 assignments
+Post-withdrawal information
+Final outcome
+```
+
+The model must never receive the answer indirectly.
+
+---
+
+# 17. Temporal Prediction
+
+The core temporal design is:
+
+```text
+X(t) → Y(final)
+```
+
+Possible experiments:
+
+```text
+Week 4 → Final outcome
+Week 8 → Final outcome
+Week 12 → Final outcome
+```
+
+BUT:
+
+**Only create these windows when the actual dataset contains sufficient temporal information.**
+
+Never fabricate week-level data.
+
+For OULAD, derive windows from actual dated interaction/assessment records.
+
+---
+
+# 18. Temporal Feature Engineering
+
+Possible features include:
+
+### Attendance
+
+```text
+attendance_current
+attendance_mean
+attendance_delta
+attendance_slope
+attendance_volatility
+```
+
+### Assignment behavior
+
+```text
+submission_rate
+late_submission_rate
+pending_assignment_count
+submission_trend
+```
+
+### Assessment
+
+```text
+assessment_mean
+assessment_latest
+assessment_delta
+assessment_slope
+assessment_variance
+```
+
+### LMS activity
+
+Where available:
+
+```text
+total_clicks
+active_days
+resource_views
+average_daily_activity
+activity_trend
+recent_activity
+activity_volatility
+```
+
+### Trend features
+
+Instead of only:
+
+```text
+attendance = 65%
+```
+
+use:
+
+```text
+attendance_current = 65%
+attendance_previous = 71%
+attendance_delta = -6%
+```
+
+Trend information is often more useful for early-warning systems.
+
+---
+
+# 19. Feature Semantics
+
+Every feature must have:
+
+```text
+Feature Name
+Definition
+Data Source
+Time Availability
+Data Type
+Allowed Range
+Missing Handling
+Leakage Risk
+Actionability
+```
+
+Example:
+
+```text
+Feature:
+attendance_percentage
+
+Definition:
+Percentage of scheduled sessions attended up to prediction date.
+
+Availability:
+Only sessions before or on prediction date.
+
+Type:
+Continuous
+
+Range:
+0–100
+
+Actionability:
+Actionable
+
+Leakage Risk:
+High if calculated using future sessions.
+```
+
+---
+
+# 20. PHASE 4 — Train/Validation/Test Design
+
+Do not randomly split temporal data without analysis.
+
+For temporal datasets, prefer:
+
+```text
+Past → Training
+Later → Validation
+Latest → Test
+```
+
+Where appropriate.
+
+For grouped student/course data, prevent the same entity from creating leakage between training and testing.
+
+Document:
+
+```text
+Split strategy
+Random seed
+Grouping
+Temporal cutoff
+Class distribution
+```
+
+---
+
+# 21. PHASE 5 — Baseline Models
+
+Start with:
+
+### Model 1
+
+Dummy baseline
+
+### Model 2
+
+Logistic Regression
+
+### Model 3
+
+Random Forest
+
+### Model 4
+
+XGBoost
+
+Optional challengers:
+
+```text
+LightGBM
+CatBoost
+```
+
+Do not declare XGBoost the winner before experiments.
+
+---
+
+# 22. Imbalance Handling
+
+Possible approaches:
+
+```text
+class weights
+SMOTE
+random oversampling
+threshold optimization
+```
+
+If SMOTE is used:
+
+```text
+TRAINING FOLD ONLY
+```
+
+Never:
+
+```text
+SMOTE(full dataset)
+→ split
+```
+
+Correct:
+
+```text
+split
+→ training fold
+→ SMOTE(training fold)
+→ train
+→ validate
+```
+
+Otherwise information can leak into validation/test data.
+
+---
+
+# 23. Evaluation Metrics
+
+Primary:
+
+```text
+PR-AUC
+Recall
+Precision
+F1
+ROC-AUC
+```
+
+Additional:
+
+```text
+Brier Score
+Calibration Error
+Confusion Matrix
+Specificity
+Sensitivity
+```
+
+Accuracy should not be the only metric.
+
+For early-warning systems, false negatives may be especially important because a missed at-risk student may not receive support.
+
+---
+
+# 24. Threshold Selection
+
+Do not automatically use:
+
+```text
+threshold = 0.5
+```
+
+Instead:
+
+1. Train model.
+2. Generate validation probabilities.
+3. Evaluate thresholds.
+4. Define intervention cost.
+5. Compare false positives and false negatives.
+6. Select operating point.
+7. Freeze threshold.
+8. Evaluate once on untouched test data.
+
+Perform sensitivity analysis:
+
+```text
+1:1
+2:1
+5:1
+10:1
+```
+
+for false-negative versus false-positive cost assumptions.
+
+The project must report the selected assumption.
+
+---
+
+# 25. Probability Calibration
+
+A risk probability should be meaningful.
+
+Example:
+
+```text
+Predicted risk = 0.80
+```
+
+should approximately mean:
+
+```text
+students with similar predictions experience the target outcome around 80% of the time
+```
+
+where calibration permits that interpretation.
+
+Candidate methods:
+
+```text
+Platt scaling
+Isotonic regression
+```
+
+Evaluate:
+
+```text
+Brier score
+calibration curve
+expected calibration error
+```
+
+---
+
+# 26. PHASE 6 — Explainable AI
+
+Primary method:
+
+```text
+SHAP
+```
+
+Supporting methods:
+
+```text
+LIME
+Permutation Importance
+```
+
+## Global explanation
+
+Identify important factors across the cohort.
+
+Example structure:
+
+```text
+1. Recent assessment trend
+2. Attendance
+3. Assignment completion
+4. LMS activity
+```
+
+The actual ranking must come from the trained model.
+
+Never manually write the ranking.
+
+---
+
+# 27. Local Explanation
+
+For an individual student:
+
+```text
+Risk = 0.82
+```
+
+SHAP might produce:
+
+```text
+Recent assessment decline → increases risk
+Low attendance → increases risk
+Strong previous performance → decreases risk
+```
+
+The wording must be generated from actual SHAP values.
+
+---
+
+# 28. Explanation Language Rules
+
+Allowed:
+
+> Low recent assessment performance contributed to the predicted risk.
+
+Allowed:
+
+> Attendance was an important factor in this prediction.
+
+Not allowed:
+
+> Low attendance caused the student to fail.
+
+Not allowed:
+
+> The student will definitely fail.
+
+Not allowed:
+
+> The model knows the student's future.
+
+---
+
+# 29. Explanation Stability
+
+Compare:
+
+```text
+SHAP
+LIME
+Permutation Importance
+```
+
+For top-k features.
+
+Possible stability measurement:
+
+```text
+Jaccard similarity
+```
+
+Example:
+
+```text
+SHAP top 5
+vs
+LIME top 5
+```
+
+Report stability rather than assuming explanations are reliable.
+
+---
+
+# 30. PHASE 7 — Counterfactual Recourse
+
+Goal:
+
+```text
+"What could realistically change the prediction?"
+```
+
+Candidate framework:
+
+```text
+DiCE
+```
+
+But raw counterfactual generation is not sufficient.
+
+It must be constrained.
+
+---
+
+# 31. Feature Actionability Matrix
+
+## Immutable
+
+Examples:
+
+```text
+Age
+Gender
+Previous qualification
+Previous GPA
+Entry qualification
+```
+
+These must not be changed by recourse.
+
+## Actionable
+
+Examples:
+
+```text
+Future attendance
+Pending assignments
+Study activity
+Future engagement
+Future participation
+```
+
+## Conditionally actionable
+
+Examples:
+
+```text
+Current assessment score
+LMS activity
+Academic performance
+```
+
+These require realistic time constraints.
+
+---
+
+# 32. Counterfactual Feasibility
+
+Suppose:
+
+```text
+Classes completed = 60
+Classes attended = 36
+Classes remaining = 20
+```
+
+Maximum possible final attendance:
+
+```text
+(36 + 20) / (60 + 20)
+= 70%
+```
+
+Therefore the system must never recommend:
+
+```text
+Reach 95% attendance
+```
+
+because that is mathematically impossible.
+
+The recourse engine must calculate feasibility.
+
+---
+
+# 33. Recourse Objective
+
+Conceptually:
+
+```text
+Find minimum-cost actionable changes
+such that:
+
+new_prediction < risk_threshold
+```
+
+subject to:
+
+```text
+immutable feature constraints
+range constraints
+temporal constraints
+feasibility constraints
+institutional rules
+```
+
+---
+
+# 34. Action Plan Engine
+
+Counterfactual output should become structured actions.
+
+Example:
+
+```json
+{
+  "feature": "attendance",
+  "current_value": 62,
+  "target_value": 70,
+  "deadline": "next 3 weeks",
+  "priority": "high",
+  "reason": "Attendance is contributing to predicted risk",
+  "feasible": true
+}
+```
+
+The system should not invent interventions outside the available evidence.
+
+---
+
+# 35. LLM Usage Rule
+
+An LLM may optionally convert verified structured actions into natural language.
+
+Example:
+
+Structured:
+
+```text
+attendance:
+62 → 70
+feasible: true
+priority: high
+```
+
+LLM:
+
+> Try to attend the remaining scheduled sessions consistently. Your current attendance is contributing to the model's risk estimate.
+
+The LLM must NOT determine the numerical target itself.
+
+The ML/constraint engine determines:
+
+```text
+what
+how much
+when
+whether feasible
+```
+
+The LLM only determines:
+
+```text
+how to explain it naturally
+```
+
+---
+
+# 36. PHASE 8 — Student Dashboard
+
+Student dashboard should show:
+
+```text
+Overall Risk
+Risk Probability
+Risk Category
+Prediction Date
+Top Contributing Factors
+Recommended Actions
+Progress
+Historical Risk
+```
+
+Example:
+
+```text
+Academic Risk
+72%
+
+Risk Level
+HIGH
+
+Main contributing factors
+
+Attendance       ███████
+Assessment trend ██████
+Assignments      ████
+
+Recommended actions
+
+✓ Attend remaining sessions
+✓ Complete pending assignments
+✓ Meet faculty advisor
+```
+
+Do not display unsupported certainty.
+
+---
+
+# 37. PHASE 9 — Faculty Dashboard
+
+Faculty view:
+
+```text
+Total Students
+Low Risk
+Medium Risk
+High Risk
+Students Requiring Review
+Risk Trends
+Top Risk Factors
+Intervention Status
+```
+
+Faculty should be able to:
+
+```text
+view student
+view explanation
+view recommended action
+record intervention
+add notes
+track progress
+```
+
+---
+
+# 38. Human-in-the-Loop Requirement
+
+The system must not automatically punish students.
+
+It must NOT:
+
+```text
+assign grades
+suspend students
+deny admission
+remove scholarships
+discipline students
+```
+
+Prediction should support human decision-making.
+
+Recommended:
+
+```text
+Model
+ ↓
+Faculty Review
+ ↓
+Intervention
+ ↓
+Student Support
+```
+
+---
+
+# 39. PHASE 10 — Backend
+
+Recommended:
+
+```text
+Python
+FastAPI
+PostgreSQL
+SQLAlchemy
+Pydantic
+JWT authentication
+```
+
+Potential services:
+
+```text
+/api/auth
+/api/students
+/api/predictions
+/api/explanations
+/api/recourse
+/api/interventions
+/api/models
+/api/monitoring
+```
+
+---
+
+# 40. Example Prediction API
+
+```http
+POST /api/predictions
+```
+
+Input:
+
+```json
+{
+  "student_id": "anonymous-id",
+  "prediction_window": "week_8"
+}
+```
+
+Output:
+
+```json
+{
+  "risk_probability": 0.73,
+  "risk_level": "high",
+  "model_version": "xgb-2026-01",
+  "threshold_version": "threshold-03"
+}
+```
+
+Every prediction should identify the model/threshold version.
+
+---
+
+# 41. Authentication
+
+Roles:
+
+```text
+STUDENT
+FACULTY
+ADMIN
+```
+
+Student:
+
+```text
+Own information only
+```
+
+Faculty:
+
+```text
+Assigned students
+```
+
+Admin:
+
+```text
+Model/configuration/system management
+```
+
+Never expose raw student records to unauthorized users.
+
+---
+
+# 42. Privacy Architecture
+
+The ML system should use:
+
+```text
+anonymous_student_id
+```
+
+instead of directly exposing:
+
+```text
+name
+phone
+email
+roll number
+```
+
+Where institutional data is used:
+
+```text
+Identity database
+        ↓
+secure mapping
+        ↓
+anonymous ML identifier
+        ↓
+ML database
+```
+
+The identity mapping should remain separate.
+
+---
+
+# 43. Audit Logging
+
+Record:
+
+```text
+who
+what
+when
+which model
+which prediction
+which intervention
+```
+
+Example:
+
+```text
+faculty_id
+student_id
+timestamp
+model_version
+risk_probability
+action_taken
+```
+
+Avoid logging unnecessary sensitive information.
+
+---
+
+# 44. PHASE 11 — MLOps
+
+Version:
+
+```text
+Dataset
+Feature definitions
+Model
+Hyperparameters
+Threshold
+Calibration
+Code
+```
+
+Each model artifact should have metadata:
+
+```json
+{
+  "model_version": "xgb-001",
+  "dataset_version": "oulad-v1",
+  "feature_version": "features-003",
+  "threshold_version": "threshold-002",
+  "training_commit": "git-sha",
+  "training_date": "YYYY-MM-DD",
+  "random_seed": 42
+}
+```
+
+---
+
+# 45. Monitoring
+
+Monitor:
+
+## Data drift
+
+```text
+Feature distributions
+Missingness
+Category changes
+```
+
+## Prediction drift
+
+```text
+Risk prevalence
+Probability distribution
+```
+
+## Performance drift
+
+When labels become available:
+
+```text
+Precision
+Recall
+F1
+PR-AUC
+ROC-AUC
+Calibration
+```
+
+## Concept drift
+
+Check whether relationships between features and outcomes change.
+
+---
+
+# 46. Retraining
+
+Do not automatically retrain every week.
+
+Recommended process:
+
+```text
+Semester completed
+        ↓
+Collect labelled outcomes
+        ↓
+Evaluate current model
+        ↓
+Drift analysis
+        ↓
+Retraining experiment
+        ↓
+Compare against current model
+        ↓
+Human approval
+        ↓
+Deploy
+```
+
+---
+
+# 47. Fairness Evaluation
+
+Evaluate relevant subgroups available in the dataset.
+
+Possible dimensions:
+
+```text
+Gender
+Age group
+International status
+Scholarship status
+Disability status
+Other legally/ethically appropriate groups
+```
+
+Evaluate:
+
+```text
+Recall
+False positive rate
+False negative rate
+Precision
+Calibration
+```
+
+Do not automatically remove features solely because they are demographic.
+
+First investigate:
+
+```text
+predictive usefulness
+fairness implications
+institutional policy
+ethical requirements
+```
+
+---
+
+# 48. PHASE 12 — Testing
+
+Testing must occur at multiple levels.
+
+## Unit tests
+
+```text
+feature calculations
+validation
+threshold logic
+recourse constraints
+authentication
+```
+
+## Integration tests
+
+```text
+dataset → model
+model → SHAP
+model → recourse
+API → database
+API → frontend
+```
+
+## ML tests
+
+```text
+no leakage
+schema consistency
+probability range
+calibration
+metric calculation
+model reproducibility
+```
+
+## Security tests
+
+```text
+unauthorized access
+role escalation
+invalid JWT
+SQL injection
+input validation
+```
+
+---
+
+# 49. Mandatory ML Tests
+
+The agent must implement tests proving:
+
+### Test 1
+
+No target column enters features.
+
+### Test 2
+
+No future timestamp enters an earlier prediction window.
+
+### Test 3
+
+No student identity is accidentally used as a predictive feature.
+
+### Test 4
+
+Training transformations are not fitted on test data.
+
+### Test 5
+
+SMOTE is not applied before splitting.
+
+### Test 6
+
+Test set is never used for threshold selection.
+
+### Test 7
+
+Test set is never used for hyperparameter tuning.
+
+### Test 8
+
+Counterfactuals cannot modify immutable features.
+
+### Test 9
+
+Impossible recommendations are rejected.
+
+### Test 10
+
+Prediction probabilities are between:
+
+```text
+0 and 1
+```
+
+---
+
+# 50. AI-Agent Development Architecture
+
+Do not ask one agent:
+
+> Build the entire EduSight system.
+
+Instead use specialized agents.
+
+---
+
+# 51. Agent 1 — Data Engineer
+
+Responsibilities:
+
+```text
+Download datasets
+Validate files
+Create provenance
+Inspect schemas
+Generate data inventory
+```
+
+Must not:
+
+```text
+invent missing columns
+modify raw data
+fabricate data
+```
+
+Output:
+
+```text
+DATA_PROVENANCE.md
+data_inventory.json
+schema_report.json
+```
+
+---
+
+# 52. Agent 2 — Data Quality Agent
+
+Responsibilities:
+
+```text
+missing values
+duplicates
+outliers
+invalid values
+identifier integrity
+target distribution
+```
+
+Output:
+
+```text
+data_quality_report.html
+```
+
+---
+
+# 53. Agent 3 — Leakage Auditor
+
+Responsibilities:
+
+```text
+inspect every feature
+inspect temporal availability
+identify target leakage
+identify post-outcome information
+```
+
+Output:
+
+```text
+LEAKAGE_AUDIT.md
+feature_availability.csv
+```
+
+This agent has authority to BLOCK model training.
+
+---
+
+# 54. Agent 4 — Feature Engineering Agent
+
+Responsibilities:
+
+```text
+temporal aggregation
+trend features
+academic features
+behavioral features
+```
+
+Every feature must have:
+
+```text
+source
+formula
+time availability
+```
+
+Output:
+
+```text
+feature_registry.yaml
+```
+
+---
+
+# 55. Agent 5 — ML Training Agent
+
+Responsibilities:
+
+```text
+baseline
+logistic regression
+random forest
+XGBoost
+optional challengers
+cross-validation
+training
+artifact creation
+```
+
+Must NOT claim a model is best before evaluation.
+
+---
+
+# 56. Agent 6 — Evaluation Agent
+
+Responsibilities:
+
+```text
+PR-AUC
+ROC-AUC
+precision
+recall
+F1
+Brier score
+calibration
+confusion matrix
+threshold analysis
+```
+
+Output:
+
+```text
+experiment_results.csv
+evaluation_report.md
+```
+
+---
+
+# 57. Agent 7 — Explainability Agent
+
+Responsibilities:
+
+```text
+SHAP
+LIME
+permutation importance
+local explanations
+global explanations
+stability analysis
+```
+
+Must use actual trained models.
+
+---
+
+# 58. Agent 8 — Recourse Agent
+
+Responsibilities:
+
+```text
+DiCE
+immutable constraints
+actionability
+feasibility
+cost minimization
+```
+
+Must reject impossible counterfactuals.
+
+---
+
+# 59. Agent 9 — Backend Agent
+
+Responsibilities:
+
+```text
+FastAPI
+Pydantic
+database
+authentication
+RBAC
+prediction API
+explanation API
+recourse API
+```
+
+---
+
+# 60. Agent 10 — Frontend Agent
+
+Responsibilities:
+
+```text
+student dashboard
+faculty dashboard
+admin dashboard
+charts
+risk display
+explanations
+action plans
+```
+
+---
+
+# 61. Agent 11 — Security Agent
+
+Responsibilities:
+
+```text
+authentication testing
+authorization testing
+input validation
+JWT security
+database access
+secret management
+```
+
+---
+
+# 62. Agent 12 — QA Agent
+
+Responsibilities:
+
+```text
+unit tests
+integration tests
+ML tests
+API tests
+frontend tests
+security tests
+```
+
+This agent should be able to reject a phase.
+
+---
+
+# 63. Agent 13 — Documentation Agent
+
+Responsibilities:
+
+```text
+README
+architecture
+dataset provenance
+experiments
+API documentation
+installation
+deployment
+research report
+```
+
+---
+
+# 64. Agent 14 — Final Verification Agent
+
+Responsibilities:
+
+Check:
+
+```text
+real data
+real metrics
+no fabricated results
+no leakage
+working API
+working frontend
+working authentication
+working explanations
+working recourse
+tests passing
+documentation complete
+```
+
+---
+
+# 65. AI Agent Universal Rules
+
+Give every coding agent these rules:
+
+```text
+RULE 1:
+Never invent data.
+
+RULE 2:
+Never invent a dataset column.
+
+RULE 3:
+Never invent experimental results.
+
+RULE 4:
+Never invent citations.
+
+RULE 5:
+Never report an unexecuted metric.
+
+RULE 6:
+Never claim code works without executing tests.
+
+RULE 7:
+Never use synthetic data for model-performance claims.
+
+RULE 8:
+Never bypass leakage checks.
+
+RULE 9:
+Never modify immutable counterfactual features.
+
+RULE 10:
+Never expose private student information.
+
+RULE 11:
+Never silently change target definitions.
+
+RULE 12:
+Never silently change preprocessing.
+
+RULE 13:
+Record every important experiment.
+
+RULE 14:
+If required information is unavailable, STOP and report it.
+
+RULE 15:
+A failed verification gate blocks the next phase.
+```
+
+---
+
+# 66. Agent Phase Contract
+
+Every agent must produce:
+
+```text
+1. Work performed
+2. Files created
+3. Files modified
+4. Commands executed
+5. Tests executed
+6. Test results
+7. Metrics
+8. Dataset used
+9. Dataset version
+10. Known limitations
+11. Verification status
+12. Next required action
+```
+
+---
+
+# 67. Phase Status Format
+
+Every phase should finish with:
+
+```text
+PHASE:
+STATUS: PASS / FAIL / BLOCKED
+
+DATASET:
+DATASET VERSION:
+
+FILES CREATED:
+
+FILES MODIFIED:
+
+COMMANDS EXECUTED:
+
+TESTS:
+PASS:
+FAIL:
+
+RESULTS:
+
+LEAKAGE CHECK:
+PASS / FAIL
+
+REPRODUCIBILITY:
+PASS / FAIL
+
+KNOWN ISSUES:
+
+NEXT PHASE:
+```
+
+---
+
+# 68. Research Questions
+
+## RQ1
+
+How accurately can academic risk be predicted using information available at different points during a semester?
+
+## RQ2
+
+How does predictive performance change between early and later prediction windows?
+
+## RQ3
+
+Which features contribute most to individual and cohort-level risk predictions?
+
+## RQ4
+
+Can constrained counterfactual explanations produce feasible intervention targets?
+
+## RQ5
+
+How stable are explanations across SHAP, LIME, and permutation importance?
+
+## RQ6
+
+Does the model maintain comparable error characteristics across relevant demographic subgroups?
+
+---
+
+# 69. Experiment Matrix
+
+```text
+E1  UCI697 Logistic Regression
+E2  UCI697 Random Forest
+E3  UCI697 XGBoost
+
+E4  OULAD Logistic Regression Early
+E5  OULAD Random Forest Early
+E6  OULAD XGBoost Early
+
+E7  OULAD XGBoost Mid
+E8  OULAD XGBoost Late
+
+E9  Institutional Model Early
+E10 Institutional Model Mid
+E11 Institutional Model Late
+```
+
+Important:
+
+These are planned experiments.
+
+They are NOT results.
+
+Only report experiments actually executed.
+
+---
+
+# 70. Final Research Tables
+
+The final report should contain tables similar to:
+
+### Model comparison
+
+| Model | PR-AUC | ROC-AUC | Precision | Recall | F1 | Brier |
+|---|---:|---:|---:|---:|---:|---:|
+| Logistic Regression | — | — | — | — | — | — |
+| Random Forest | — | — | — | — | — | — |
+| XGBoost | — | — | — | — | — | — |
+
+Replace `—` only after the experiments are executed.
+
+---
+
+# 71. Temporal Comparison
+
+| Prediction Window | PR-AUC | Recall | Precision | F1 | Calibration |
+|---|---:|---:|---:|---:|---:|
+| Early | — | — | — | — | — |
+| Mid | — | — | — | — | — |
+| Late | — | — | — | — | — |
+
+---
+
+# 72. Explanation Stability
+
+| Method | Top-k Features | Agreement |
+|---|---:|---:|
+| SHAP vs LIME | 5 | — |
+| SHAP vs Permutation | 5 | — |
+| LIME vs Permutation | 5 | — |
+
+---
+
+# 73. Counterfactual Evaluation
+
+Measure:
+
+```text
+counterfactual success rate
+feasible rate
+average number of changed features
+average intervention cost
+immutable-feature violation count
+```
+
+Critical metric:
+
+```text
+immutable-feature violation count = 0
+```
+
+---
+
+# 74. Deployment Architecture
+
+Recommended:
+
+```text
+                     Internet / Campus Network
+                              │
+                              ↓
+                        Frontend
+                              │
+                              ↓
+                         FastAPI
+                              │
+              ┌───────────────┼───────────────┐
+              ↓               ↓               ↓
+          PostgreSQL       ML Service     Auth Service
+                              │
+                    ┌─────────┴─────────┐
+                    ↓                   ↓
+                Model              Explainer
+                    │                   │
+                    └─────────┬─────────┘
+                              ↓
+                         Recourse
+                              │
+                              ↓
+                       Action Planner
+```
+
+---
+
+# 75. Docker
+
+Recommended services:
+
+```text
+frontend
+backend
+database
+ml-service
+```
+
+Potential:
+
+```text
+docker-compose.yml
+```
+
+Environment variables:
+
+```text
+DATABASE_URL
+JWT_SECRET
+MODEL_PATH
+ENVIRONMENT
+LOG_LEVEL
+```
+
+Never commit secrets.
+
+---
+
+# 76. Git Strategy
+
+Branches:
+
+```text
+main
+develop
+
+feature/data-pipeline
+feature/ml
+feature/explainability
+feature/recourse
+feature/api
+feature/frontend
+feature/security
+feature/testing
+```
+
+Commit examples:
+
+```text
+feat(data): add OULAD ingestion
+feat(features): add temporal activity features
+feat(model): add XGBoost training pipeline
+feat(xai): add SHAP explanations
+feat(recourse): add feasibility constraints
+feat(api): add prediction endpoint
+test(ml): add leakage tests
+docs: add dataset provenance
+```
+
+---
+
+# 77. Reproducibility
+
+Every experiment must record:
+
+```text
+Git commit
+Dataset
+Dataset version
+Feature version
+Random seed
+Python version
+Package versions
+Model parameters
+Training timestamp
+Threshold
+Calibration method
+```
+
+Use:
+
+```text
+requirements.txt
+```
+
+or:
+
+```text
+uv.lock
+poetry.lock
+```
+
+as appropriate.
+
+---
+
+# 78. Environment
+
+Recommended Python environment:
+
+```text
+Python 3.11+
+```
+
+Core packages may include:
+
+```text
+pandas
+numpy
+scikit-learn
+xgboost
+shap
+lime
+dice-ml
+imbalanced-learn
+matplotlib
+seaborn
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+psycopg
+pytest
+```
+
+Only install packages actually required.
+
+---
+
+# 79. AI-Agent Prompt Template
+
+Use this template when launching each agent:
+
+```text
+You are the [AGENT NAME] for the EduSight project.
+
+PROJECT:
+EduSight is an explainable early academic risk detection and student-support system.
+
+YOUR PHASE:
+[PHASE]
+
+OBJECTIVE:
+[OBJECTIVE]
+
+INPUTS:
+[FILES / DATA / PREVIOUS OUTPUTS]
+
+OUTPUTS:
+[EXPECTED FILES]
+
+STRICT RULES:
+
+1. Never invent data.
+2. Never invent columns.
+3. Never invent results.
+4. Never fabricate citations.
+5. Never silently alter target definitions.
+6. Never bypass leakage validation.
+7. Never use synthetic data for performance claims.
+8. Run tests before declaring success.
+9. Report every command executed.
+10. Stop if required information is unavailable.
+
+VERIFICATION:
+Before finishing, execute the relevant tests and provide:
+
+- files created
+- files changed
+- commands executed
+- tests
+- results
+- known issues
+- verification status
+```
+
+---
+
+# 80. Final Verification Checklist
+
+## Data
+
+```text
+[ ] Authentic dataset used
+[ ] Official source recorded
+[ ] License recorded
+[ ] SHA256 recorded
+[ ] Raw data preserved
+[ ] No fabricated records
+[ ] No fabricated columns
+```
+
+## Leakage
+
+```text
+[ ] Target excluded from features
+[ ] Future information excluded
+[ ] Temporal windows verified
+[ ] Train/test separation verified
+[ ] SMOTE leakage checked
+```
+
+## Model
+
+```text
+[ ] Baseline trained
+[ ] RF trained
+[ ] XGBoost trained
+[ ] Metrics calculated
+[ ] Calibration evaluated
+[ ] Threshold selected using validation
+[ ] Test set untouched until final evaluation
+```
+
+## XAI
+
+```text
+[ ] SHAP implemented
+[ ] Local explanations work
+[ ] Global explanations work
+[ ] LIME evaluated
+[ ] Permutation importance evaluated
+[ ] Explanation stability evaluated
+```
+
+## Recourse
+
+```text
+[ ] DiCE/recourse implemented
+[ ] Immutable features protected
+[ ] Actionability defined
+[ ] Feasibility implemented
+[ ] Impossible recommendations rejected
+```
+
+## Backend
+
+```text
+[ ] API works
+[ ] Authentication works
+[ ] RBAC works
+[ ] Validation works
+[ ] Database works
+```
+
+## Frontend
+
+```text
+[ ] Student dashboard works
+[ ] Faculty dashboard works
+[ ] Risk visualization works
+[ ] Explanation visualization works
+[ ] Action plan works
+```
+
+## Security
+
+```text
+[ ] Secrets excluded from Git
+[ ] Unauthorized endpoints blocked
+[ ] Role escalation tested
+[ ] Student data isolated
+[ ] Audit logging implemented
+```
+
+## MLOps
+
+```text
+[ ] Dataset versioned
+[ ] Feature versioned
+[ ] Model versioned
+[ ] Threshold versioned
+[ ] Drift monitoring implemented
+```
+
+## Documentation
+
+```text
+[ ] README
+[ ] Architecture
+[ ] Dataset provenance
+[ ] Methodology
+[ ] Experiments
+[ ] API docs
+[ ] Installation
+[ ] Deployment
+[ ] Limitations
+[ ] Ethics/privacy
+```
+
+---
+
+# 81. Final Demo Flow
+
+The final demonstration should follow this sequence:
+
+```text
+Login
+ ↓
+Student Dashboard
+ ↓
+Show Risk Probability
+ ↓
+Show Risk Level
+ ↓
+Show SHAP Explanation
+ ↓
+Show Counterfactual Suggestions
+ ↓
+Show Feasibility
+ ↓
+Student Takes Action
+ ↓
+Faculty Dashboard
+ ↓
+Faculty Reviews Student
+ ↓
+Faculty Records Intervention
+ ↓
+Risk/Progress Tracking
+```
+
+---
+
+# 82. Final Presentation Story
+
+The project should be presented as:
+
+```text
+Traditional system
+        ↓
+Reports what happened
+
+EduSight
+        ↓
+Predicts future risk
+        ↓
+Explains why
+        ↓
+Identifies feasible changes
+        ↓
+Supports intervention
+        ↓
+Tracks outcomes
+```
+
+The key contribution is therefore:
+
+```text
+Prediction
++
+Explainability
++
+Actionability
++
+Feasibility
++
+Human-in-the-loop support
+```
+
+---
+
+# 83. What Must NOT Be Claimed
+
+Never claim:
+
+> EduSight achieved 83% accuracy.
+
+unless the actual EduSight experiment produces that result.
+
+The base paper's reported performance belongs to the base paper, not this project.
+
+Never claim:
+
+> The model proves attendance causes failure.
+
+Never claim:
+
+> The model predicts the future with certainty.
+
+Never claim:
+
+> AI automatically identifies the students who will fail.
+
+Instead:
+
+> The model estimates the probability of the defined target outcome based on information available at the prediction point.
+
+---
+
+# 84. Known Scientific Limitations
+
+The final report must acknowledge:
+
+1. Public datasets may not represent the user's college.
+2. Different datasets use different target definitions.
+3. Prediction does not establish causation.
+4. Historical data can contain institutional biases.
+5. Explanations may vary between methods.
+6. Counterfactuals are recommendations constrained by the available model/features, not guaranteed outcomes.
+7. Institutional deployment requires authorization and privacy controls.
+8. Model performance may change across semesters.
+9. External validation is required before real institutional use.
+
+---
+
+# 85. Production-Level Definition of Done
+
+EduSight is NOT considered complete merely because:
+
+```text
+model.predict() works
+```
+
+The project is complete only when:
+
+```text
+Authentic data
+        +
+Leakage-safe features
+        +
+Validated model
+        +
+Calibrated probability
+        +
+Validated threshold
+        +
+Explainability
+        +
+Constrained recourse
+        +
+Feasible action plan
+        +
+Secure API
+        +
+RBAC
+        +
+Student dashboard
+        +
+Faculty dashboard
+        +
+Monitoring
+        +
+Testing
+        +
+Documentation
+```
+
+are all present.
+
+---
+
+# 86. Recommended Execution Order for Tonight
+
+Execute in this order:
+
+```text
+STEP 1
+Create repository structure
+
+STEP 2
+Download OULAD
+
+STEP 3
+Download UCI 697
+
+STEP 4
+Generate provenance
+
+STEP 5
+Run data audit
+
+STEP 6
+Run leakage audit
+
+STEP 7
+Build temporal feature pipeline
+
+STEP 8
+Build baseline model
+
+STEP 9
+Build RF/XGBoost models
+
+STEP 10
+Evaluate models
+
+STEP 11
+Calibrate probabilities
+
+STEP 12
+Select threshold
+
+STEP 13
+Implement SHAP
+
+STEP 14
+Implement counterfactual recourse
+
+STEP 15
+Implement feasibility engine
+
+STEP 16
+Build FastAPI
+
+STEP 17
+Build authentication/RBAC
+
+STEP 18
+Build student dashboard
+
+STEP 19
+Build faculty dashboard
+
+STEP 20
+Add monitoring
+
+STEP 21
+Run complete test suite
+
+STEP 22
+Run final verification agent
+
+STEP 23
+Generate final report
+```
+
+---
+
+# 87. Important Practical Rule for Tonight
+
+Do not sacrifice scientific validity just to make the project look complete.
+
+If the agent reaches:
+
+```text
+"Required institutional attendance data is unavailable"
+```
+
+it must NOT generate fake attendance data and continue pretending it is real.
+
+Instead:
+
+```text
+BLOCKED:
+Institutional attendance data unavailable.
+
+Available:
+OULAD temporal activity data.
+
+Action:
+Continue using OULAD for the public-data experiment.
+Mark institutional validation as pending.
+```
+
+That is a scientifically valid project state.
+
+---
+
+# 88. Final Verification Agent Prompt
+
+Use this as the final agent instruction:
+
+```text
+You are the final verification agent for EduSight.
+
+Your job is NOT to improve the project.
+
+Your job is to find problems.
+
+Inspect the complete repository.
+
+Verify:
+
+1. No fabricated data.
+2. No fabricated results.
+3. No fabricated citations.
+4. No target leakage.
+5. No temporal leakage.
+6. No test-set contamination.
+7. No preprocessing leakage.
+8. No impossible counterfactuals.
+9. No immutable-feature changes.
+10. No unauthorized API access.
+11. No secrets committed.
+12. No broken endpoints.
+13. No broken frontend functionality.
+14. All ML tests pass.
+15. All API tests pass.
+16. Dataset provenance exists.
+17. Model versions exist.
+18. Threshold versions exist.
+19. Results are reproducible.
+20. Documentation matches implementation.
+
+For every failure:
+
+FAILURE:
+SEVERITY:
+FILE:
+LINE:
+PROBLEM:
+EVIDENCE:
+RECOMMENDED FIX:
+
+Do not hide failures.
+
+At the end produce:
+
+FINAL STATUS:
+PASS / FAIL / BLOCKED
+
+CRITICAL ISSUES:
+...
+
+NON-CRITICAL ISSUES:
+...
+
+RECOMMENDED NEXT STEPS:
+...
+```
+
+---
+
+# 89. Final Architecture Summary
+
+The final EduSight system should implement:
+
+```text
+                ┌─────────────────────────┐
+                │   Authentic Data        │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Data Validation         │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Temporal Features       │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Leakage Prevention      │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ ML Model                │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Calibration             │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Risk Probability        │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ SHAP / XAI              │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Counterfactual Recourse │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Feasibility Engine      │
+                └────────────┬────────────┘
+                             ↓
+                ┌─────────────────────────┐
+                │ Action Plan             │
+                └────────────┬────────────┘
+                             ↓
+             ┌───────────────┴───────────────┐
+             ↓                               ↓
+      Student Dashboard               Faculty Dashboard
+             │                               │
+             └───────────────┬───────────────┘
+                             ↓
+                   Human Intervention
+                             ↓
+                    Outcome Monitoring
+                             ↓
+                       Model Monitoring
+```
+
+---
+
+# 90. Final Principle
+
+EduSight should be treated as an **AI decision-support system**, not an AI decision-maker.
+
+The model estimates risk.
+
+The explanation shows contributing factors.
+
+The recourse engine identifies feasible changes.
+
+The faculty member reviews the information.
+
+The student receives support.
+
+The eventual outcome becomes new evidence for future model evaluation.
+
+That is the intended production-level architecture.
+
+---
+
+## END OF MASTER BUILD DOCUMENTATION
+
+**Primary external dataset references**
+
+- UCI Predict Students' Dropout and Academic Success — official UCI dataset, 4,424 higher-education instances and 36 features.
+- Open University Learning Analytics Dataset — official Open University resource describing the anonymized course/student/VLE dataset.

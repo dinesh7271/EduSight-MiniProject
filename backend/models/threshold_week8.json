@@ -1,0 +1,9 @@
+{
+  "threshold": 0.1,
+  "window": "week8",
+  "model": "xgboost",
+  "fn_cost_weight": 5,
+  "fp_cost_weight": 1,
+  "random_seed": 42,
+  "note": "Threshold selected on CV validation probabilities, not on test set."
+}

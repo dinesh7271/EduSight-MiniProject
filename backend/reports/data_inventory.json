@@ -1,0 +1,23 @@
+{
+  "datasets": [
+    {
+      "dataset_name": "Predict Students' Dropout and Academic Success",
+      "dataset_id": "UCI-697",
+      "official_source": "UCI Machine Learning Repository",
+      "official_url": "https://archive.ics.uci.edu/dataset/697/predict+students+dropout+and+academic+success",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "doi": "10.24432/C5GP7S",
+      "download_date": "2026-09-30",
+      "dataset_version": "1",
+      "original_file": "data/raw/uci697/data.csv",
+      "original_row_count": 4424,
+      "original_column_count": 37,
+      "sha256": "3ef126de5cefff26eb11fbb4237f1a1401cb64b488e2f1d598c23cedeb4c45ae",
+      "native_target": "Target (Dropout / Enrolled / Graduate)",
+      "experimental_binary_target": "at_risk (Dropout=1, Enrolled/Graduate=0)",
+      "target_mapping_documented": true
+    }
+  ],
+  "generated_at": "2026-09-30",
+  "note": "All datasets from official public sources. No synthetic data used for model training."
+}

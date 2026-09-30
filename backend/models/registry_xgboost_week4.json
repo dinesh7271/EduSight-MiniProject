@@ -1,0 +1,27 @@
+{
+  "model_version": "xgboost-week4-001",
+  "model_name": "xgboost",
+  "window": "week4",
+  "dataset_id": "UCI-697",
+  "feature_version": "v1",
+  "threshold": 0.1,
+  "threshold_version": "threshold-week4-001",
+  "calibration_method": "isotonic",
+  "training_date": "2026-09-30T21:31:12.794425",
+  "training_commit": "unknown",
+  "random_seed": 42,
+  "python_packages": {
+    "pandas": "2.2.3",
+    "numpy": "2.2.1",
+    "sklearn": "1.6.0",
+    "xgboost": "3.4.1",
+    "shap": "0.46.0",
+    "dice_ml": "unknown",
+    "imblearn": "0.14.2",
+    "fastapi": "0.115.6"
+  },
+  "metrics": {
+    "status": "trained_and_validated"
+  },
+  "note": "Model trained on UCI-697 with documented experimental binary target mapping."
+}
