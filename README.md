@@ -30,41 +30,48 @@
 
 ```mermaid
 flowchart TD
-    subgraph Data & Pipeline Layer
+    subgraph Data_Layer ["Data & Pipeline Layer"]
         UCI["Dataset: UCI 697 (4,424 Students)"] --> Ingest["Ingestion & SHA-256 Checksum"]
         Ingest --> LeakageAudit["Leakage Auditor"]
         LeakageAudit --> Preproc["Temporal Window Splitter"]
-        Preproc --> W4["Week 4 (Enrollment & Attendance)"]
-        Preproc --> W8["Week 8 (+ Internal 1 / CIA-1 Marks)"]
-        Preproc --> W12["Week 12 (+ Internal 2 / CIA-2 Marks)"]
+        Preproc --> W4["Week 4: Baseline & Attendance"]
+        Preproc --> W8["Week 8: Internal 1 / CIA-1 Marks"]
+        Preproc --> W12["Week 12: Internal 2 / CIA-2 Marks"]
     end
 
-    subgraph Machine Learning Engine
-        W4 & W8 & W12 --> ImbPipe["imblearn Pipeline (SMOTE in CV Folds)"]
-        ImbPipe --> Models["Ensembles (XGBoost, RF, LogReg)"]
+    subgraph ML_Engine ["Machine Learning Engine"]
+        ImbPipe["imblearn Pipeline (SMOTE in CV Folds)"] --> Models["Ensembles: XGBoost, RF, LogReg"]
         Models --> Calib["Isotonic Probability Calibration"]
         Models --> SHAP["TreeExplainer SHAP Attributions"]
         Models --> Recourse["DiCE Constrained Recourse Engine"]
     end
 
-    subgraph Backend API (:8000)
-        SQLite[("SQLite Relational DB\n(data/edusight.db)")]
+    subgraph Backend_Service ["Backend REST API (Port 8000)"]
+        SQLite[("SQLite Relational DB")]
         FastAPI["FastAPI REST Application"]
-        JWT["JWT Auth + PBKDF2 Password Hashing"]
-        FastAPI <--> SQLite
-        FastAPI <--> Calib
-        FastAPI <--> SHAP
-        FastAPI <--> Recourse
+        JWT["JWT Auth + PBKDF2 Hashing"]
+        FastAPI --> SQLite
+        FastAPI --> JWT
     end
 
-    subgraph Frontend Client (:5173)
+    subgraph Frontend_Client ["Frontend Client (Port 5173)"]
         Vite["React 18 + Vite SPA"]
         Auth["Dual Login & Account Registration"]
-        SDash["Student Dashboard (Attendance, CIA, Gauge, SHAP)"]
-        FDash["Faculty Dashboard (Cohort Stats, Roster, Interventions)"]
-        Vite --> Auth & SDash & FDash
-        Vite <-->|REST Proxy /api| FastAPI
+        SDash["Student Dashboard"]
+        FDash["Faculty Dashboard"]
+        Vite --> Auth
+        Vite --> SDash
+        Vite --> FDash
     end
+
+    %% Cross-layer integrations
+    W4 --> ImbPipe
+    W8 --> ImbPipe
+    W12 --> ImbPipe
+    FastAPI --> Calib
+    FastAPI --> SHAP
+    FastAPI --> Recourse
+    Vite -->|"REST API (/api)"| FastAPI
 ```
 
 ---
